@@ -85,7 +85,6 @@ class LazySusan(Boxes):
 
 
 
-
     def render(self):
         if self.outside:
             o=self.thickness
@@ -98,10 +97,10 @@ class LazySusan(Boxes):
             top=self.teckness
         else:
             top=0
+##  The drawing of the file start here
 
         angle, inside_radius, outside_radius, h = self.angle-angle_reduction, self.inside_radius+o, self.outside_radius-o, self.h-o-top
         t = self.thickness
-        # angle = 30
 
         self.moveTo(0, 5)
         self.drawfloor(angle, inside_radius, outside_radius)
@@ -109,8 +108,6 @@ class LazySusan(Boxes):
 
         # #flex wall for outside
         outside_wall = angle * (math.pi / 180) * outside_radius
-        # self.rectangularWall(outside_wall, h, "eFeF", move="right",label="Outside Wall")
-        # # self.edges["X"](-outside_wall, h=h)
         self.drawFlexWall(outside_wall, h)
 
 
@@ -118,15 +115,10 @@ class LazySusan(Boxes):
         self.moveTo(outside_wall+10, 0)
         inside_wall = angle * (math.pi / 180) * inside_radius
         self.drawFlexWall(inside_wall, h)
-        # self.rectangularWall(inside_wall, h, "eFeF", move="right",label="Inside Wall")
 
         #solid endcap walls
         self.moveTo(inside_wall+10,0)
         self.drawWall(outside_radius-inside_radius, h, "fFeF")
 
         self.moveTo(outside_radius-inside_radius+10, 0)
-        # self.flangedWall(outside_radius-inside_radius,h, "Ffef", move="up",label="end cap" )
         self.drawWall(outside_radius-inside_radius, h, "fFeF")
-        # self.flangedWall(outside_radius-inside_radius,h, "Ffef", move="right",label="end cap")
-
-        # # self.edges["X"](50, h=50)
