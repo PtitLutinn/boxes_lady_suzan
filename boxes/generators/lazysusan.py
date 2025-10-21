@@ -27,7 +27,7 @@ class LazySusan(Boxes):
         self.addSettingsArgs(edges.FingerJointSettings)
         self.addSettingsArgs(edges.FlexSettings)
 
-        self.buildArgParser(h=110)
+        self.buildArgParser(outside="FALSE",h=110,)
         self.argparser.add_argument(
             "--inside_radius", action="store", type=float, default=40,
             help="inside radius of the lazy susan")
@@ -47,17 +47,17 @@ class LazySusan(Boxes):
             self.moveTo(inside_radius, 0)
             self.moveArc(90)
             self.polyline(0, (angle, inside_radius))
-        
+
         with self.saved_context():
             self.moveTo(outside_radius, 0)
             self.moveArc(90)
             self.polyline(0, (angle, outside_radius))
             self.polyline(0, 90)
-            self.edges["f"](outside_radius-inside_radius)
+            self.edges["F"](outside_radius-inside_radius)
 
         with self.saved_context():
             self.moveTo(inside_radius, 0)
-            self.edges["f"](outside_radius-inside_radius)
+            self.edges["F"](outside_radius-inside_radius)
 
     def drawWall(self, length, height, edges):
         """Draw a wall with the given width, height, edges and label."""
@@ -79,7 +79,7 @@ class LazySusan(Boxes):
             self.corner(90)
             self.edges["f"](height, h=length)
             self.corner(90)
-            self.edges["e"](length, h=height)
+            self.edges["E"](length, h=height)
             self.corner(90)
             self.edges["f"](height, h=length)
 
@@ -87,9 +87,20 @@ class LazySusan(Boxes):
 
 
     def render(self):
-        angle, inside_radius, outside_radius, h = self.angle, self.inside_radius, self.outside_radius, self.h
-        t = self.thickness
+        if self.outside:
+            o=self.thickness
+            angle_reduction= 2*o/(self.inside_radius+o)*180/math.pi   ## diameter réduction for accomodate of the outside walls.
 
+        else:
+            angle_reduction=0
+            o=0
+        if self.outside and (self.top=='lid' or self.top=='close'):
+            top=self.teckness
+        else:
+            top=0
+
+        angle, inside_radius, outside_radius, h = self.angle-angle_reduction, self.inside_radius+o, self.outside_radius-o, self.h-o-top
+        t = self.thickness
         # angle = 30
 
         self.moveTo(0, 5)
@@ -100,24 +111,22 @@ class LazySusan(Boxes):
         outside_wall = angle * (math.pi / 180) * outside_radius
         # self.rectangularWall(outside_wall, h, "eFeF", move="right",label="Outside Wall")
         # # self.edges["X"](-outside_wall, h=h)
-        self.drawFlexWall(outside_wall, h+t)
-        # I think this will slide the outside wall down
-        
+        self.drawFlexWall(outside_wall, h)
+
+
         #flex wall for inside
         self.moveTo(outside_wall+10, 0)
         inside_wall = angle * (math.pi / 180) * inside_radius
-        self.drawFlexWall(inside_wall, h+t)
-        # I think this will slide the outside wall down
+        self.drawFlexWall(inside_wall, h)
         # self.rectangularWall(inside_wall, h, "eFeF", move="right",label="Inside Wall")
-        
+
         #solid endcap walls
         self.moveTo(inside_wall+10,0)
-        self.drawWall(outside_radius-inside_radius+2*t, h, "fFeF")
+        self.drawWall(outside_radius-inside_radius, h, "fFeF")
 
         self.moveTo(outside_radius-inside_radius+10, 0)
         # self.flangedWall(outside_radius-inside_radius,h, "Ffef", move="up",label="end cap" )
-        self.drawWall(outside_radius-inside_radius+2*t, h, "fFeF")
+        self.drawWall(outside_radius-inside_radius, h, "fFeF")
         # self.flangedWall(outside_radius-inside_radius,h, "Ffef", move="right",label="end cap")
 
         # # self.edges["X"](50, h=50)
-       
