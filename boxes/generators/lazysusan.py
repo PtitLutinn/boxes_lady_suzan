@@ -75,7 +75,7 @@ class LazySusan(Boxes):
         """Draw a wall with the given width, height, edges and label."""
         with self.saved_context():
             self.moveTo(0, 0)
-            self.edges["X"](length, h=height)
+            self.edges["e"](length, h=height)
             self.corner(90)
             self.edges["f"](height, h=length)
             self.corner(90)
