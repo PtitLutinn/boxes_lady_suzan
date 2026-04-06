@@ -38,6 +38,9 @@ class LazySusan(Boxes):
             "--angle", action="store", type=float, default=70,
             help="angle of the lazy susan. If outside is false it's the angle between the inside of the endcap wall")
         self.argparser.add_argument(
+                "--handle", action="store", type=bool, default='False', 
+                help="Draw an indent on the wall to use ase handle")
+        self.argparser.add_argument(
             "--top",  action="store", type=str, default="hole",
             choices=["hole", "lid", "closed",],
             help="style of the top and lid")
@@ -75,7 +78,9 @@ class LazySusan(Boxes):
         """Draw a wall with the given width, height, edges and label."""
         with self.saved_context():
             self.moveTo(0, 0)
-            self.edges["X"](length, h=height+thickness)
+            self.edges["e"](thickness)
+            self.edges["X"](length-2*thickness, h=height+thickness)
+            self.edges["e"](thickness)
             self.corner(90)
             self.edges["F"](height+thickness, h=length)
             self.corner(90)
@@ -108,11 +113,18 @@ class LazySusan(Boxes):
         # #flex wall for outside
         outside_wall = angle * (math.pi / 180) * outside_radius + 2*t-2*o
         self.drawFlexWall(outside_wall, h,t)
+        if self.handle:
+            with self.saved_context():
+                self.moveTo(outside_wall/2-10,h+t+0.05)
+                self.curveTo(0,-15,20,-15,20,0)
+                #self.moveTo(0,0,degrees=0)
+
+
 
 
         #flex wall for inside
         self.moveTo(outside_wall+10, 0)
-        inside_wall = angle * (math.pi / 180) * inside_radius+2*t-2*o
+        inside_wall = angle * (math.pi / 180) * (inside_radius-t) + 2*t-2*o
         self.drawFlexWall(inside_wall, h,t)
 
         #solid endcap walls
