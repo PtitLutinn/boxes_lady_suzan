@@ -117,7 +117,6 @@ class LazySusan(Boxes):
             with self.saved_context():
                 self.moveTo(outside_wall/2-10,h+t+0.05)
                 self.curveTo(0,-15,20,-15,20,0)
-                #self.moveTo(0,0,degrees=0)
 
 
 
